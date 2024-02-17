@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number-transform-string</title>
+</head>
+<body>
+    
+    <input type="text" id="input-text" value="" placeholder="숫자를 입력하면 한글로 변환되어요" style="width: 30%"/>
+    <p class="text-area"></p>
+
+    <script>
+        const inputEl = document.getElementById('input-text');
+        const textEl = document.querySelector('.text-area');
+        
+
+        /** 단위별로 배열 만들기 */
+        const numberUnit = ['영', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구'];
+        const smallUnit = ['', '십','백','천'];
+        const unit = ['만', '억', '조'];  
+            
+        /** 숫자를 한글로 변환하는 함수 */
+        function convertToKorean(number) {
+            let result = ''; // 변환된 한글을 저장할 변수
+            let remainder = 0; // 숫자를 나눈 나머지를 저장할 변수
+            let skipNextUnit = false; // 다음 단위를 스킵할지 여부를 나타내는 변수
+            
+            /** 인풋에 0 먼저 적었을 때 처리 */
+            if(number === '0'){
+                return '영';
+            }
+
+            for (let i = 0; number > 0; i++) {
+                /** 
+                 * 입력한 숫자를 하나씩 분리하는 과정
+                 * 만약 number값이 12일때 
+                 * 12/10 = 1.2 remainder에 첫번째 자리수의 숫자 2가 저장되고
+                 * number값에는 다음 자릿수인 1이 저장되어 2,1 이렇게 숫자를 하나씩 분리한다.
+                 */
+
+                remainder = number % 10; // 입력하는 숫자는 십진수므로 10을 나눠 현재 자릿수의 숫자를 구함
+                number = Math.floor(number / 10); // 다음 자릿수로 이동
+                
+                let tempStr = '';
+                if(remainder > 0) {
+                    /** 
+                     * 위에서 나눈 숫자들을 한글로 변환하는 과정
+                     * 만약 number값이 12일때 위에서 2,1로 분리되고, 이때 i의 값은 분리한 숫자의 인덱스 값이 들어온다. 즉 0,1이 i로 들어온다.
+                     * 2 - 일의 자리므로 '이' 출력
+                     * 1 - 십의 자리므로 '일' 다음 '십' '일십'으로 출력
+                    */ 
+                    tempStr = numberUnit[remainder]; // 일의 자릿수 변환
+                    tempStr += smallUnit[i % 4]; // 십, 백, 천 자릿수 변환 : 천단위씩 나눠서 계산하니까 숫자 4를 나눔
+
+
+                    /* 십,백,천 자리에서 '일'이라는 한글 제거 */
+                    if(i >= 1){
+                        if (i >= 4) {
+                            tempStr += unit[i % 4]
+                            tempStr = tempStr.replace('일', '');
+                        }else {
+                            tempStr = tempStr.replace('일', '');
+                        }
+                    }
+                    
+
+            
+                
+                }
+
+                /** 결과값이 있을 경우에만 추가 */
+                if (tempStr !== '') {
+                    result = tempStr + result;
+                }
+                
+            }
+
+            return result;
+        }
+
+        /** 인풋 입력 시 텍스트 출력 */
+        const onChangeHandler = (e) => {
+            const inputValue = e.target.value;
+            const convertValue = convertToKorean(inputValue);
+            textEl.innerText = convertValue;
+        };
+
+        inputEl.addEventListener('input', onChangeHandler);
+    
+    </script>
+</body>
+</html>
