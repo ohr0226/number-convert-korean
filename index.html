@@ -7,7 +7,7 @@
     <title>Number-transform-string</title>
 </head>
 <body>
-    
+
     <input type="text" id="input-text" value="" placeholder="숫자를 입력하면 한글로 변환되어요" style="width: 30%"/>
     <p class="text-area"></p>
 
@@ -19,13 +19,12 @@
         /** 단위별로 배열 만들기 */
         const numberUnit = ['영', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구'];
         const smallUnit = ['', '십','백','천'];
-        const unit = ['','만', '억', '조'];  
+        const unit = ['','만', '억', '조'];
             
         /** 숫자를 한글로 변환하는 함수 */
         function convertToKorean(number) {
             let result = ''; // 변환된 한글을 저장할 변수
             let remainder = 0; // 숫자를 나눈 나머지를 저장할 변수
-            let skipNextUnit = false; // 다음 단위를 스킵할지 여부를 나타내는 변수
             
             /** 인풋에 0 먼저 적었을 때 처리 */
             if(number === '0'){
@@ -55,19 +54,27 @@
                     tempStr += smallUnit[i % 4]; // 십, 백, 천 자릿수 변환 : 천단위씩 나눠서 계산하니까 숫자 4를 나눔
 
 
-                    /* 십,백,천 자리에서 '일'이라는 한글 제거 */
+                    /* 십,백,천 자리에서 '일'이라는 한글 제거, 억은 일억. 십억부터는 '일'제거 */
                     if(i >= 1){
-                        if (i >= 4) {
-                            tempStr += unit[i % 4]
-                            tempStr = tempStr.replace('일', '');
-                        }else {
-                            tempStr = tempStr.replace('일', '');
+                        if(i === 8) {
+                            tempStr = tempStr.replace('', '일');
+                        }
+                        tempStr = tempStr.replace('일', '');
+                    }
+
+
+                    /* 만,억,조 자릿수 4배 규칙 적용 */
+                    if(i >= 4 ) {
+                        if (i % 4 === 0) {
+                            tempStr += unit[Math.floor(i / 4)]
+                        } else {
+                            tempStr += unit[Math.floor(i / 4)].replace('일', '');
                         }
                     }
-                    
 
-            
-                
+                    /** 4 = 만, 5 = 십만, 6 = 백만, 7 = 천만, 8 = 억 */
+                    /** 4 = 만, 8 = 억, 12 = 조 */
+
                 }
 
                 /** 결과값이 있을 경우에만 추가 */
